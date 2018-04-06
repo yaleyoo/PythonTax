@@ -9,6 +9,7 @@
 
 import wx
 import wx.xrc
+from check import *
 
 ###########################################################################
 ## Class MyFrame1
@@ -17,6 +18,8 @@ import wx.xrc
 class MyFrame1 ( wx.Frame ):
 	
 	def __init__( self, parent ):
+		global path
+		path = None
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查工具", pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TRANSPARENT_WINDOW )
 		
 		self.SetSizeHintsSz( wx.Size( 500,300 ), wx.Size( 500,300 ) )
@@ -66,7 +69,8 @@ class MyFrame1 ( wx.Frame ):
 		
 		self.m_button8 = wx.Button( self.bitmap, wx.ID_ANY, u"开始审查", wx.DefaultPosition, wx.DefaultSize, 0|wx.ALWAYS_SHOW_SB )
 		gbSizer2.Add( self.m_button8, wx.GBPosition( 0, 2 ), wx.GBSpan( 1, 1 ), wx.ALL|wx.ALIGN_RIGHT, 5 )
-		
+		## 绑定选择文件按钮监听事件
+		self.Bind(wx.EVT_BUTTON,self.__startChecking ,self.m_button8)
 		
 		bSizer2.Add( gbSizer2, 0, wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
@@ -90,7 +94,8 @@ class MyFrame1 ( wx.Frame ):
 	####   打开文件
 	##############
 	def __OpenSingleFile(self, event):
-		filesFilter = "xlsx (*.xlsx)|*.xlsx|" "xls (*.xls)|*.xls"
+		global path
+		filesFilter = "xlsx (*.xlsx)|*.xlsx"
 		fileDialog = wx.FileDialog(self, message ="选择文件", wildcard = filesFilter, style = wx.FD_OPEN)
 		dialogResult = fileDialog.ShowModal()
 		if dialogResult !=  wx.ID_OK:
@@ -110,7 +115,17 @@ class MyFrame1 ( wx.Frame ):
 
 	######## 检查方法 入口
 	def __startChecking(self,evert):
-		pass
+		if path!=None:
+			report = open("report.txt", 'w')
+			rules = load_rules()
+			check_workbook(path,rules,report)
+
+			report.close()
+
+			win = done(self)
+			win.Show(True)
+		else:
+			wx.MessageBox("输入文件不能为空，请选择输入文件", "错误" ,wx.OK | wx.ICON_INFORMATION) 
 
 	def __del__( self ):
 		pass
@@ -153,7 +168,7 @@ class done ( wx.Dialog ):
 		
 		self.m_button3 = wx.Button( self, wx.ID_ANY, u"完成", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer4.Add( self.m_button3, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-		
+		self.Bind(wx.EVT_BUTTON,self.__done__ ,self.m_button3)
 		
 		self.SetSizer( bSizer4 )
 		self.Layout()
@@ -161,6 +176,9 @@ class done ( wx.Dialog ):
 		
 		self.Centre( wx.BOTH )
 	
+	def __done__(self, event):
+		self.Close(True)
+
 	def __del__( self ):
 		pass
 	
