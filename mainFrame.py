@@ -10,6 +10,8 @@
 import wx
 import wx.xrc
 from check import *
+import sys
+import os
 
 ###########################################################################
 ## Class MyFrame1
@@ -22,9 +24,12 @@ class MyFrame1 ( wx.Frame ):
 		path = None
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查工具", pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TRANSPARENT_WINDOW )
 		
-		self.SetSizeHintsSz( wx.Size( 500,300 ), wx.Size( 500,300 ) )
-		
-	 	self.bitmap = wx.StaticBitmap(self, -1, wx.Image('bg.jpg', wx.BITMAP_TYPE_ANY).ConvertToBitmap(), (0, 0)) 
+		if hasattr(sys, "_MEIPASS"):
+	 		base_path = sys._MEIPASS
+		else:
+			base_path = os.path.abspath(".")
+		bgfile = os.path.join(base_path, 'bg.jpg')
+	 	self.bitmap = wx.StaticBitmap(self, -1, wx.Image(bgfile, wx.BITMAP_TYPE_ANY).ConvertToBitmap(), (0, 0)) 
 		self.m_menubar1 = wx.MenuBar( 0 )
 		self.m_menu1 = wx.Menu()
 		self.m_menuItem1 = wx.MenuItem( self.m_menu1, wx.ID_ANY, u"打开文件", wx.EmptyString, wx.ITEM_NORMAL )
@@ -90,6 +95,7 @@ class MyFrame1 ( wx.Frame ):
 		
 		self.Centre( wx.BOTH )
 
+
 	###############
 	####   打开文件
 	##############
@@ -129,7 +135,7 @@ class MyFrame1 ( wx.Frame ):
 
 	def __del__( self ):
 		pass
-#########################3
+#########################
 #### 透明背景
 ######################
 class TPStaticText(wx.StaticText):  

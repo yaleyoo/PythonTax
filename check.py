@@ -2,7 +2,13 @@
 
 from utilities import *
 
-def load_rules(filename = "rules.txt"):
+def load_rules(filename = 'rules.txt'):
+    if hasattr(sys, "_MEIPASS"):
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(".")
+    filename = os.path.join(base_path, filename)
+
     rules_file = open(filename, "r")
     rules_str = rules_file.read()
     rules = eval(rules_str)
@@ -19,7 +25,7 @@ def check_workbook(filename, rules, report):
 
     for sheet_name in rules:
         if sheet_name not in wb:
-            report.write(report_line(sheet_name, None, " sheet is not in the workbook"))
+            report.write(report_line(sheet_name, None, " 子表不存在"))
             continue
         for col in rules[sheet_name]:
             for row in rules[sheet_name][col]:
@@ -28,31 +34,30 @@ def check_workbook(filename, rules, report):
                     value = wb[sheet_name][cell].value
                     except_value = eval(rules[sheet_name][col][row])
                     if value == except_value:
-                        report.write(report_line(sheet_name, cell, "SUCCESS: value: ", value, " except_value: ",
-                                                except_value, " eval: ", rules[sheet_name][col][row]))
+                        report.write(report_line(sheet_name, cell, "正确!"))
                     else:
-                        report.write(report_line(sheet_name, cell, "值: ", value, " 期望值: ", except_value,
-                                                " eval: ", rules[sheet_name][col][row]))
+                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,
+                                                " eval: ", rules[sheet_name][col][row],"\n"))
                 except TypeError as e:
                     report.write(report_line(sheet_name, cell, "TypeError ", "message: ", str(e), " eval: ",
-                                            rules[sheet_name][col][row]))
+                                            rules[sheet_name][col][row],"\n"))
                 except ValueError as e:
                     report.write(report_line(sheet_name, cell, "ValueError ", "message: ", str(e), "eval: ",
-                                            rules[sheet_name][col][row]))
+                                            rules[sheet_name][col][row],"\n"))
                 except ZeroDivisionError as e:
                     report.write(report_line(sheet_name, cell, "ZeroDivisionError ", "message: ", str(e), "eval: ",
-                                            rules[sheet_name][col][row]))
+                                            rules[sheet_name][col][row],"\n"))
 
                 except Exception as e:
                     # print(e)
                     # print("error on ", col, row, "eval: ", rules[sheet_name][col][row])
                     report.write(report_line(sheet_name, cell, "Other Error ", "message: ", str(e), "eval: ",
-                                            rules[sheet_name][col][row]))
+                                            rules[sheet_name][col][row],"\n"))
 
 
 if __name__ == '__main__':
 
-    report = open("report.txt", 'w')
+    report = open(resource_path('resources/rules.txt'), 'w')
     rules = load_rules()
     check_workbook(u"所得税申报表-testing.xlsx", rules, report)
 
