@@ -14,6 +14,7 @@ def load_rules(filename = 'rules.txt'):
     rules_file = open(filename, "r")
     rules_str = rules_file.read()
     rules = eval(rules_str)
+
     return rules
 
 def check_workbook(filename, rules, report):
@@ -25,20 +26,20 @@ def check_workbook(filename, rules, report):
     wb = {short_name: wb[full_sheetname[short_name]]
           for short_name in full_sheetname}
 
-    for sheet_name in rules:
+    for sheet_name in sorted(rules.keys()):
         if sheet_name not in wb:
             report.write(report_line(sheet_name, None, " 子表不存在"))
             continue
-        for col in rules[sheet_name]:
-            for row in rules[sheet_name][col]:
+        for col in sorted(rules[sheet_name].keys()):
+            for row in sorted(rules[sheet_name][col].keys()):
                 cell = col + str(row)
                 try:
                     value = wb[sheet_name][cell].value
-                    except_value = eval(rules[sheet_name][col][row])
-                    if value == except_value:
+                    expect_value = eval(rules[sheet_name][col][row])
+                    if value == expect_value:
                         report.write(report_line(sheet_name, cell, "正确!"))
                     else:
-                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,
+                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", expect_value,
                                                 " eval: ", rules[sheet_name][col][row],"\n"))
                 except TypeError as e:
                     report.write(report_line(sheet_name, cell, "TypeError ", "message: ", str(e), " eval: ",
