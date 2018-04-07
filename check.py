@@ -57,7 +57,7 @@ def check_workbook(filename, rules, report):
 
 if __name__ == '__main__':
 
-    report = open(resource_path('resources/rules.txt'), 'w')
+    report = open('report.txt', 'w')
     rules = load_rules()
     check_workbook(u"所得税申报表-testing.xlsx", rules, report)
 
