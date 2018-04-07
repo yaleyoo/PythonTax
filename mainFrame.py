@@ -23,7 +23,7 @@ class MyFrame1 ( wx.Frame ):
 		global path
 		path = None
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查工具", pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TRANSPARENT_WINDOW )
-		
+		self.SetSizeHintsSz(wx.Size(500,300), wx.Size(500,300))
 		if hasattr(sys, "_MEIPASS"):
 	 		base_path = sys._MEIPASS
 		else:
