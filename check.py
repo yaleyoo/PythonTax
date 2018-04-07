@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*- #
 
 from utilities import *
+import sys
+import os
 
 def load_rules(filename = 'rules.txt'):
     if hasattr(sys, "_MEIPASS"):
