@@ -22,8 +22,8 @@ class MyFrame1 ( wx.Frame ):
 	def __init__( self, parent ):
 		global path
 		path = None
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查工具", pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.DEFAULT_FRAME_STYLE|wx.TRANSPARENT_WINDOW )
-		self.SetSizeHintsSz(wx.Size(500,300), wx.Size(500,300))
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查工具", pos = wx.DefaultPosition, size = wx.Size( 515,338 ), style = wx.DEFAULT_FRAME_STYLE|wx.TRANSPARENT_WINDOW )
+		self.SetSizeHintsSz(wx.Size(515,338), wx.Size(515,338))
 		if hasattr(sys, "_MEIPASS"):
 	 		base_path = sys._MEIPASS
 		else:
@@ -47,16 +47,18 @@ class MyFrame1 ( wx.Frame ):
 		self.Bind(wx.EVT_MENU,self.openManual,self.m_menuItem2) 
 		
 		
-		self.m_menuItem3 = wx.MenuItem( self.m_menu2, wx.ID_ANY, u"制作", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItem3 = wx.MenuItem( self.m_menu2, wx.ID_ANY, u"版权说明", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menu2.AppendItem( self.m_menuItem3 )
 		
-		self.m_menubar1.Append( self.m_menu2, u"关于" ) 
+		self.m_menubar1.Append( self.m_menu2, u"帮助" ) 
 		
 		self.SetMenuBar( self.m_menubar1 )
 		######### 绑定响应函数
 		self.Bind(wx.EVT_MENU,self.openAuthor,self.m_menuItem3) 
 		
 		bSizer2 = wx.BoxSizer( wx.VERTICAL )
+
+		
 		
 		self.m_textCtrl1 = wx.TextCtrl( self, wx.ID_ANY, u"文件路径", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_textCtrl1.Enable( False )
@@ -82,12 +84,12 @@ class MyFrame1 ( wx.Frame ):
 		self.m_staticline2 = wx.StaticLine( self.bitmap, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer2.Add( self.m_staticline2, 0, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_staticText6 = wx.StaticText( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText6.Wrap( -1 )
+		self.m_staticText6 = TPStaticText( self, wx.ID_ANY, u"使用说明：\n本软件仅支持Window平台。\n1. 按照《中华人民共和国企业所得税年度纳税申报表（A类，2017年版）》所示规范填写\n   《2017年版企业所得税申报表》。\n2.《2017年版企业所得税申报表》的格式应为xlsx，如为xls格式，请使用2007或更新版本\n    Excel将表格转换为xlsx格式。\n3. 点击“选择文件”按钮，选择填写完毕的《2017年版企业所得税申报表》。\n4. 点击“开始审查”按钮。\n5. 报告将生成在该软件所处目录下。请对照报告修改申报表。\n")
+		#self.m_staticText6.Wrap( -1 )
 		bSizer2.Add( self.m_staticText6, 1, wx.ALL, 5 )
 	
-		self.m_staticText5 = TPStaticText(self, wx.ID_ANY, u"                                       拉萨经济技术开发区国家税务局")
-		bSizer2.Add( self.m_staticText5, 0, wx.ALIGN_BOTTOM|wx.ALL|wx.EXPAND, 28 )
+		#self.m_staticText5 = TPStaticText(self, wx.ID_ANY, u"                                       拉萨经济技术开发区国家税务局")
+		#bSizer2.Add( self.m_staticText5, 0, wx.ALIGN_BOTTOM|wx.ALL|wx.EXPAND, 28 )
 		
 		
 		self.SetSizer( bSizer2 )
@@ -196,13 +198,13 @@ class done ( wx.Dialog ):
 class author ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"关于作者", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"版权说明", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
 		bSizer7 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"本工具由xx制作：\n", wx.DefaultPosition, wx.Size( 300,200 ), 0 )
+		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"本软件是一个为《2017年版企业所得税申报表》提供自动审查服务的自动审查工具，版本号：v1.0\n\n版权所有：西藏经济技术开发区国家税务局\n\n开发者：郭元昱，蒋若波，朱慧媛\n", wx.DefaultPosition, wx.Size( 300,200 ), 0 )
 		self.m_staticText8.Wrap( -1 )
 		bSizer7.Add( self.m_staticText8, 1, wx.ALL|wx.EXPAND, 5 )
 		
@@ -230,15 +232,14 @@ class manual ( wx.Dialog ):
 		
 		bSizer6 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText7 = wx.StaticText( self, wx.ID_ANY, u"使用说明啊\nbabbababa", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText7.Wrap( -1 )
-		bSizer6.Add( self.m_staticText7, 1, wx.ALL|wx.EXPAND, 5 )
-		
-		
+		self.m_textCtrl3 = wx.TextCtrl( self, wx.ID_ANY, u"使用说明：\n本软件仅支持Window平台。\n1. 按照《中华人民共和国企业所得税年度纳税申报表（A类，2017年版）》所示规范填写《2017年版企业所得税申报表》。\n2.《2017年版企业所得税申报表》的格式应为xlsx，如为xls格式，请使用2007或更新版本Excel将表格转换为xlsx格式。\n3. 点击“选择文件”按钮，选择填写完毕的《2017年版企业所得税申报表》。\n4. 点击“开始审查”按钮。\n5. 报告将生成在该软件所处目录下。请对照报告修改申报表。\n----------------------------------------------------\n免责声明：\n", wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.TE_READONLY|wx.TE_MULTILINE )
+		bSizer6.Add( self.m_textCtrl3, 1, wx.ALL|wx.EXPAND, 5 )
+
 		self.SetSizer( bSizer6 )
 		self.Layout()
 		
 		self.Centre( wx.BOTH )
+
 	
 	def __del__( self ):
 		pass

@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['D:\\Projects\\Python\\PythonTax'],
+             pathex=['C:\\Users\\tinys\\Desktop\\ff\\kk'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -21,11 +21,11 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          [('bg.jpg','bg.jpg','DATA')],
-          [('rules.txt','rules.txt','DATA')],
+          [('bg.jpg','C:\\Users\\tinys\\Desktop\\ff\\kk\\bg.jpg','DATA')],
+          [('rules.txt','C:\\Users\\tinys\\Desktop\\ff\\kk\\rules.txt','DATA')],
           name='main',
           debug=False,
           strip=False,
           upx=True,
           runtime_tmpdir=None,
-          console=True )
+          console=False )

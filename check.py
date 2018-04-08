@@ -3,6 +3,7 @@
 from utilities import *
 import sys
 import os
+from decimal import Decimal 
 
 def load_rules(filename = 'rules.txt'):
     if hasattr(sys, "_MEIPASS"):
@@ -14,11 +15,12 @@ def load_rules(filename = 'rules.txt'):
     rules_file = open(filename, "r")
     rules_str = rules_file.read()
     rules = eval(rules_str)
-
     return rules
 
 def check_workbook(filename, rules, report):
-
+    report.write("-----------------------------------------------------------\n")
+    report.write("|-------------------税务申报表自动审查报告----------------|\n")
+    report.write("-----------------------------------------------------------\n\n")
     wb = load_workbook(filename, data_only=True)
 
     full_sheetname = get_sheet_names_dict(rules, wb.sheetnames)
@@ -35,12 +37,16 @@ def check_workbook(filename, rules, report):
                 cell = col + str(row)
                 try:
                     value = wb[sheet_name][cell].value
-                    expect_value = eval(rules[sheet_name][col][row])
-                    if value == expect_value:
+                    if value==None:
+                        value=0
+                    value = '{:.2f}'.format(Decimal(value)) 
+                    except_value = eval(rules[sheet_name][col][row])
+                    except_value = '{:.2f}'.format(Decimal(except_value)) 
+                    if value == except_value:
                         report.write(report_line(sheet_name, cell, "正确!"))
                     else:
-                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", expect_value,
-                                                " eval: ", rules[sheet_name][col][row],"\n"))
+                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,
+                                                " 对应公式: ", rules[sheet_name][col][row],"\n"))
                 except TypeError as e:
                     report.write(report_line(sheet_name, cell, "TypeError ", "message: ", str(e), " eval: ",
                                             rules[sheet_name][col][row],"\n"))
@@ -48,8 +54,15 @@ def check_workbook(filename, rules, report):
                     report.write(report_line(sheet_name, cell, "ValueError ", "message: ", str(e), "eval: ",
                                             rules[sheet_name][col][row],"\n"))
                 except ZeroDivisionError as e:
-                    report.write(report_line(sheet_name, cell, "ZeroDivisionError ", "message: ", str(e), "eval: ",
-                                            rules[sheet_name][col][row],"\n"))
+                    #report.write(report_line(sheet_name, cell, "ZeroDivisionError ", "message: ", str(e), "eval: ",
+                    #                        rules[sheet_name][col][row],"\n"))
+                    #TODO
+                    except_value='{:.2f}'.format(Decimal("0")) 
+                    if value == except_value:
+                        report.write(report_line(sheet_name, cell, "正确!"))
+                    else:
+                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,
+                                                " 对应公式: ", rules[sheet_name][col][row],"\n"))
 
                 except Exception as e:
                     # print(e)
@@ -60,7 +73,7 @@ def check_workbook(filename, rules, report):
 
 if __name__ == '__main__':
 
-    report = open('report.txt', 'w')
+    report = open(resource_path('resources/rules.txt'), 'w')
     rules = load_rules()
     check_workbook(u"所得税申报表-testing.xlsx", rules, report)
 
