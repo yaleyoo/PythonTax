@@ -32,7 +32,7 @@ def cval(cell):
         return 0
     if cell.data_type == "b" or cell.data_type == "e":
         return None
-    if cell.value == "-" or cell.value == "*":
+    if cell.value == "*":
         return 0
     #if (type(cell.value) is str) and (not cell.value.isdigit()) and cell.value != "-" and cell.value != "*":
     #    return 0

@@ -40,12 +40,14 @@ def check_workbook(filename, rules, report):
                     if value==None:
                         value=0
                     value = '{:.2f}'.format(Decimal(value)) 
-                    except_value = eval(rules[sheet_name][col][row])
-                    except_value = '{:.2f}'.format(Decimal(except_value)) 
-                    if value == except_value:
-                        report.write(report_line(sheet_name, cell, "正确!"))
+                    expect_value = eval(rules[sheet_name][col][row])
+                    expect_value = '{:.2f}'.format(Decimal(expect_value))
+                    if value == expect_value:
+                        #report.write(report_line(sheet_name, cell, "正确!"))
+                        report.write(report_line(sheet_name, cell, "正确：值: ", value, " 期望值: ", expect_value,
+                                                 " 对应公式: ", rules[sheet_name][col][row], "\n"))
                     else:
-                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,
+                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", expect_value,
                                                 " 对应公式: ", rules[sheet_name][col][row],"\n"))
                 except TypeError as e:
                     report.write(report_line(sheet_name, cell, "TypeError ", "message: ", str(e), " eval: ",
@@ -54,15 +56,17 @@ def check_workbook(filename, rules, report):
                     report.write(report_line(sheet_name, cell, "ValueError ", "message: ", str(e), "eval: ",
                                             rules[sheet_name][col][row],"\n"))
                 except ZeroDivisionError as e:
-                    #report.write(report_line(sheet_name, cell, "ZeroDivisionError ", "message: ", str(e), "eval: ",
-                    #                        rules[sheet_name][col][row],"\n"))
-                    #TODO
-                    except_value='{:.2f}'.format(Decimal("0")) 
-                    if value == except_value:
+                    report.write(report_line(sheet_name, cell, "ZeroDivisionError ", "message: ", str(e), "eval: ",
+                                            rules[sheet_name][col][row],"\n"))
+                    # TODO more blank/0 situations
+                    #if value == 0:
+                    #    report.write(report_line(sheet_name, cell, "正确!"))
+                    '''expect_value='{:.2f}'.format(Decimal("0"))
+                    if value == expect_value:
                         report.write(report_line(sheet_name, cell, "正确!"))
                     else:
-                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,
-                                                " 对应公式: ", rules[sheet_name][col][row],"\n"))
+                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", expect_value,
+                                                " 对应公式: ", rules[sheet_name][col][row],"\n"))'''
 
                 except Exception as e:
                     # print(e)
@@ -73,10 +77,12 @@ def check_workbook(filename, rules, report):
 
 if __name__ == '__main__':
 
-    report = open(resource_path('resources/rules.txt'), 'w')
+    report = open('report.txt', 'w')
     rules = load_rules()
-    check_workbook(u"所得税申报表-testing.xlsx", rules, report)
+    check_workbook(u"非小微企业测试.xlsx", rules, report)
 
     report.close()
+
+
 
 
