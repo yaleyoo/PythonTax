@@ -20,20 +20,34 @@ def trans_sheetnames(rules):
 
 #can have bug
 def get_sequence(cell, last_cell, sheet_name):
-    this_row = cell[1:]
-    last_row = last_cell[1:]
-    while not this_row.isdigit():
-        this_row = cell[1:]
-    while not last_row.isdigit():
-        last_row = last_cell[1:]
-    this_row = int(this_row)
-    last_row = int(last_row)
-    result = ""
-    last_row += 1
-    while last_row <= this_row:
-        result += ',cval(wb["%s"]["%s%d"])' % (sheet_name, cell[0], last_row)
+    #横向累加
+    if not cell[:1]==last_cell[:1]:
+        this_row = cell[:1]
+        last_row = last_cell[:1]
+        this_row = ord(this_row)
+        last_row = ord(last_row)
+        result = ""
         last_row += 1
-    return result
+        while last_row <= this_row:
+            result += ',cval(wb["%s"]["%s%d"])' % (sheet_name, chr(last_row), int(cell[1:]))
+            last_row += 1
+        return result
+    #纵向累加
+    else:
+        this_row = cell[1:]
+        last_row = last_cell[1:]
+        while not this_row.isdigit():
+            this_row = cell[1:]
+        while not last_row.isdigit():
+            last_row = last_cell[1:]
+        this_row = int(this_row)
+        last_row = int(last_row)
+        result = ""
+        last_row += 1
+        while last_row <= this_row:
+            result += ',cval(wb["%s"]["%s%d"])' % (sheet_name, cell[0], last_row)
+            last_row += 1
+        return result
 
 
 def calculate_formula(wb, current_sheetname, formula):
@@ -43,6 +57,8 @@ def calculate_formula(wb, current_sheetname, formula):
 
     last_cell = 0
     match_obj = re.search(cell_pattern, formula)
+    
+
     while match_obj:
         sheet_name = match_obj.group(1)
         cell = match_obj.group(2)
@@ -65,6 +81,7 @@ def calculate_formula(wb, current_sheetname, formula):
         last_cell = cell
 
         match_obj = re.search(cell_pattern, formula)
+    
     result_str += formula
 
     result_str = re.sub("(\d+)%", lambda x: "0."+x.group(1), result_str)
@@ -100,4 +117,4 @@ rules_str = str(rules)
 rules_file.write(rules_str)
 rules_file.close()
 
-print(rules_str)
+#print(rules_str)
