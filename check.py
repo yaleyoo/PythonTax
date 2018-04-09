@@ -3,7 +3,8 @@
 from utilities import *
 import sys
 import os
-from decimal import Decimal 
+from decimal import Decimal
+
 
 def load_rules(filename = 'rules.txt'):
     if hasattr(sys, "_MEIPASS"):
@@ -17,84 +18,95 @@ def load_rules(filename = 'rules.txt'):
     rules = eval(rules_str)
     return rules
 
-def check_7040(filename, rules, flag, report):
-    wb = load_workbook(filename, data_only=True)
-    full_sheetname = get_sheet_names_dict(rules, wb.sheetnames)
-    wb = {short_name: wb[full_sheetname[short_name]]
-          for short_name in full_sheetname}
+
+def check_cell(wb, value, rule, must_fill=False, not_fill_message="必须填写此单元格"):
+    try:
+        if value is None:
+            if must_fill:
+                return not_fill_message
+            value = 0
+        value = '{:.2f}'.format(Decimal(value))
+        if isinstance(rule, (int, float)):
+            expect_value = rule
+        else:
+            expect_value = eval(rule)
+        expect_value = '{:.2f}'.format(Decimal(expect_value))
+        if value == expect_value:  # 正确
+            return None
+        else:
+            return "错误：值: " + value + " 期望值: " + expect_value
+    except TypeError as e:
+        return "TypeError " + "message: " + str(e) + " eval: "+rule
+    except ValueError as e:
+        return "ValueError " + "message: " + str(e) + " eval: " + rule
+    except ZeroDivisionError as e:
+        #return "ZeroDivisionError " + "message: " + str(e) + " eval: " + rule
+        # TODO
+        expect_value = '{:.2f}'.format(Decimal("0"))
+        if value == expect_value:
+            return None
+        else:
+            return "错误：值: " + value + " 期望值: " + expect_value
+    except Exception as e:
+        return "出错了 " + "错误信息: " + str(e) + " 公式: " + rule
+
+
+def check_7040(wb, flag, report):
     totalTax = wb["A100000"]["D25"].value
+
+    # 待确认行为
+    if totalTax is None:
+        totalTax = 0
+
     #### 小微企业 ###
     if flag:
         report.write("--------------------小微企业A107040表审查-----------------\n")
         c3_value = wb["A107040"]["C3"].value
-        if c3_value==None:
-            report.write(report_line("A107040", "C3", "错误：小微企业必须填写该单元格","\n"))
-        else:
-            c3_value = '{:.2f}'.format(Decimal(c3_value))
-
-            c3_expected = totalTax*0.15
-            c3_expected = '{:.2f}'.format(Decimal(c3_expected))
-
-            if c3_value == c3_expected:
-                report.write(report_line("A107040", "C3", "正确！"))
-            else:
-                report.write(report_line("A107040", "C3", "错误：值: ", c3_value, " 期望值: ", c3_expected,"\n"))
+        message = check_cell(wb, c3_value, totalTax*0.15, True, "错误：小微企业必须填写该单元格")
+        if message:
+            report.write(report_line("A107040", "C3", message))
 
         c25_value = wb["A107040"]["C25"].value
-        if c25_value==None:
-            report.write(report_line("A107040", "C25", "错误：小微企业必须填写该单元格","\n"))
-        else:
-            c25_value = '{:.2f}'.format(Decimal(c25_value))
-
-            c25_expected = totalTax*0.025
-            c25_expected = '{:.2f}'.format(Decimal(c25_expected))
-
-            if c25_value == c25_expected:
-                report.write(report_line("A107040", "C25", "正确！"))
-            else:
-                report.write(report_line("A107040", "C25", "错误：值: ", c25_value, " 期望值: ", c25_expected,"\n"))
+        message = check_cell(wb, c25_value, totalTax*0.025, True, "错误：小微企业必须填写该单元格")
+        if message:
+            report.write(report_line("A107040", "C25", message))
 
         c37_value = wb["A107040"]["C37"].value
-        if c37_value==None:
-            report.write(report_line("A107040", "C37", "错误：小微企业必须填写该单元格","\n"))
-        else:
-            c37_value = '{:.2f}'.format(Decimal(c37_value))
-            c37_expected = totalTax*0.03
-            c37_expected = '{:.2f}'.format(Decimal(c37_expected))
-
-            if c37_value == c37_expected:
-                report.write(report_line("A107040", "C37", "正确！"))
-            else:
-                report.write(report_line("A107040", "C37", "错误：值: ", c37_value, " 期望值: ", c37_expected,"\n"))
-    elif not flag:
+        message = check_cell(wb, c37_value, totalTax*0.03, True, "错误：小微企业必须填写该单元格")
+        if message:
+            report.write(report_line("A107040", "C37", message))
+    else:
         report.write("--------------------非小微企业A107040表审查-----------------\n")
         c25_value = wb["A107040"]["C25"].value
-        if c25_value==None:
-            report.write(report_line("A107040", "C25", "错误：小微企业必须填写该单元格","\n"))
-        else:
-            c25_value = '{:.2f}'.format(Decimal(c25_value))
-            c25_expected = totalTax*0.1
-            c25_expected = '{:.2f}'.format(Decimal(c25_expected))
-
-            if c25_value == c25_expected:
-                report.write(report_line("A107040", "C25", "正确！"))
-            else:
-                report.write(report_line("A107040", "C25", "错误：值: ", c25_value, " 期望值: ", c25_expected,"\n"))
+        message = check_cell(wb, c25_value, totalTax*0.1, True, "错误：非小微企业必须填写该单元格")
+        if message:
+            report.write(report_line("A107040", "C25", message))
 
         c37_value = wb["A107040"]["C37"].value
-        if c37_value==None:
-            report.write(report_line("A107040", "C37", "错误：小微企业必须填写该单元格","\n"))
-        else:
-            c37_value = '{:.2f}'.format(Decimal(c37_value))
-            c37_expected = totalTax*0.06
-            c37_expected = '{:.2f}'.format(Decimal(c37_expected))
+        message = check_cell(wb, c37_value, totalTax*0.06, True, "错误：非小微企业必须填写该单元格")
+        if message:
+            report.write(report_line("A107040", "C37", message))
 
-            if c37_value == c37_expected:
-                report.write(report_line("A107040", "C37", "正确！"))
-            else:
-                report.write(report_line("A107040", "C37", "错误：值: ", c37_value, " 期望值: ", c37_expected,"\n"))
+def check_general(wb, rules, report):
+    for sheet_name in sorted(rules.keys()):
+        if sheet_name not in wb:
+            report.write(report_line(sheet_name, None, " 子表不存在"))
+            continue
+        for col in sorted(rules[sheet_name].keys()):
+            for row in sorted(rules[sheet_name][col].keys()):
+                cell = col + str(row)
+                value = wb[sheet_name][cell].value
+                rule = rules[sheet_name][col][row]
 
-def check_workbook(filename, rules, report):
+                message = check_cell(wb, value, rule)
+                if message:
+                    if sheet_name == "A107030":
+                        report.write(report_line(sheet_name, cell, message + "\n非享受创业投资企业抵扣应纳税所得额优惠（含结转）纳税人可忽略本条错误提醒"))
+                    else:
+                        report.write(report_line(sheet_name, cell, message))
+
+
+def check_workbook(filename, rules, report, small_business=True):
     report.write("-------------------------------------------------------------\n")
     report.write("|-------------------税务申报表自动审查报告------------------|\n")
     report.write("-------------------------------------------------------------\n\n")
@@ -105,61 +117,21 @@ def check_workbook(filename, rules, report):
     wb = {short_name: wb[full_sheetname[short_name]]
           for short_name in full_sheetname}
 
-    for sheet_name in sorted(rules.keys()):
-        if sheet_name not in wb:
-            report.write(report_line(sheet_name, None, " 子表不存在"))
-            continue
-        for col in sorted(rules[sheet_name].keys()):
-            for row in sorted(rules[sheet_name][col].keys()):
-                cell = col + str(row)
-                try:
-                    value = wb[sheet_name][cell].value
-                    if value==None:
-                        value=0
-                    value = '{:.2f}'.format(Decimal(value)) 
-                    except_value = eval(rules[sheet_name][col][row])
-                    except_value = '{:.2f}'.format(Decimal(except_value)) 
-                    if value == except_value:
-                    	#正确
-                        #report.write(report_line(sheet_name, cell, "正确!"))
-                        None
-                    else:
-                        #report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,
-                         #                       " 对应公式: ", rules[sheet_name][col][row],"\n"))
-                         report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,"\n"))
-                except TypeError as e:
-                    report.write(report_line(sheet_name, cell, "TypeError ", "message: ", str(e), " eval: ",
-                                            rules[sheet_name][col][row],"\n"))
-                except ValueError as e:
-                    report.write(report_line(sheet_name, cell, "ValueError ", "message: ", str(e), "eval: ",
-                                            rules[sheet_name][col][row],"\n"))
-                except ZeroDivisionError as e:
-                    #report.write(report_line(sheet_name, cell, "ZeroDivisionError ", "message: ", str(e), "eval: ",
-                    #                        rules[sheet_name][col][row],"\n"))
-                    #TODO
-                    except_value='{:.2f}'.format(Decimal("0")) 
-                    if value == except_value:
-                        #report.write(report_line(sheet_name, cell, "正确!"))
-                        None
-                    else:
-                        #report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,
-                         #                       " 对应公式: ", rules[sheet_name][col][row],"\n"))
-                        report.write(report_line(sheet_name, cell, "错误：值: ", value, " 期望值: ", except_value,"\n"))
-                         #                       " 对应公式: ", rules[sheet_name][col][row],"\n"))
+    check_general(wb, rules, report)
+    check_7040(wb, small_business, report)
 
-                except Exception as e:
-                    # print(e)
-                    # print("error on ", col, row, "eval: ", rules[sheet_name][col][row])
-                    report.write(report_line(sheet_name, cell, "出错了 ", "错误信息: ", str(e), "公式: ",
-                                            rules[sheet_name][col][row],"\n"))
 
 
 if __name__ == '__main__':
 
+    path = u"非小微企业测试.xlsx"
+
     report = open('report.txt', 'w')
     rules = load_rules()
-    check_workbook(u"非小微企业测试.xlsx", rules, report)
+    check_workbook(path, rules, report, True)
 
     report.close()
+
+
 
 

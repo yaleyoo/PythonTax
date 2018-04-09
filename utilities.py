@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from openpyxl import load_workbook, Workbook
 import re
+
 
 def AND(*data):
     for item in data:
@@ -41,12 +44,15 @@ def cval(cell):
 
 def report_line(sheet_name, cell, *messages):
     report = ""
-    report += sheet_name + ": " + cell + ": "
+    if cell:
+        report += sheet_name + ": " + cell + ": "
+    else:
+        report += sheet_name + ": "
     for message in messages:
         if not isinstance(message, str):
             message = str(message)
         report += message
-    report += "\n"
+    report += "\n\n"
     return report
 
 
