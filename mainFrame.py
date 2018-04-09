@@ -145,24 +145,8 @@ class MyFrame1 ( wx.Frame ):
 		if path!=None:
 			report = open("report.txt", 'w')
 			rules = load_rules()
-			check_workbook(path,rules,report)
+			check_workbook(path,rules,report, flag)
 
-			check_7040(path,rules,flag,report)
-
-			report.close()
-
-			report = open("report.txt",'r+')
-			data=''
-			for line in report.readlines():
-				if(line.find('A107030')==0):
-					line += '非享受创业投资企业抵扣应纳税所得额优惠（含结转）纳税人可忽略本条错误提醒\n'
-
-				data+=line
-			
-			report.close()
-
-			report = open("report.txt",'w+')
-			report.writelines(data)
 			report.close()
 
 

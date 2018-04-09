@@ -101,12 +101,12 @@ def check_general(wb, rules, report):
                 message = check_cell(wb, value, rule)
                 if message:
                     if sheet_name == "A107030":
-                        report.write(report_line(sheet_name, cell, message + "\n非享受创业投资企业抵扣应纳税所得额优惠（含结转）纳税人可忽略本条错误提醒"))
+                        report.write(report_line(sheet_name, cell, message + " (非享受创业投资企业抵扣应纳税所得额优惠（含结转）纳税人可忽略本条错误提醒)\n"))
                     else:
                         report.write(report_line(sheet_name, cell, message))
 
 
-def check_workbook(filename, rules, report, small_business=True):
+def check_workbook(filename, rules, report, small_business):
     report.write("-------------------------------------------------------------\n")
     report.write("|-------------------税务申报表自动审查报告------------------|\n")
     report.write("-------------------------------------------------------------\n\n")
