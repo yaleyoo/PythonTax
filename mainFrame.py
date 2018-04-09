@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*- 
 
-###########################################################################
-## Python code generated with wxFormBuilder (version Jun 17 2015)
-## http://www.wxformbuilder.org/
-##
-## PLEASE DO "NOT" EDIT THIS FILE!
-###########################################################################
-
 import wx
 import wx.xrc
 from check import *
@@ -22,7 +15,7 @@ class MyFrame1 ( wx.Frame ):
 	def __init__( self, parent ):
 		global path
 		path = None
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查工具", pos = wx.DefaultPosition, size = wx.Size( 515,338 ), style = wx.DEFAULT_FRAME_STYLE|wx.TRANSPARENT_WINDOW )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查辅助工具", pos = wx.DefaultPosition, size = wx.Size( 515,338 ), style = wx.DEFAULT_FRAME_STYLE|wx.TRANSPARENT_WINDOW )
 		self.SetSizeHintsSz(wx.Size(515,338), wx.Size(515,338))
 		if hasattr(sys, "_MEIPASS"):
 	 		base_path = sys._MEIPASS
@@ -80,11 +73,31 @@ class MyFrame1 ( wx.Frame ):
 		self.Bind(wx.EVT_BUTTON,self.__startChecking ,self.m_button8)
 		
 		bSizer2.Add( gbSizer2, 0, wx.ALIGN_CENTER_HORIZONTAL, 5 )
+
+		bSizer5 = wx.BoxSizer( wx.VERTICAL )
+
+		gbSizer21 = wx.GridBagSizer( 0, 0 )
+		gbSizer21.SetFlexibleDirection( wx.BOTH )
+		gbSizer21.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
 		
+		self.m_radioBtn1 = wx.RadioButton( self.bitmap, wx.ID_ANY, u"小微企业", wx.DefaultPosition, wx.DefaultSize, 0 )
+		gbSizer21.Add( self.m_radioBtn1, wx.GBPosition( 0, 0 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		
+		self.m_radioBtn2 = wx.RadioButton( self.bitmap, wx.ID_ANY, u"非小微企业", wx.DefaultPosition, wx.DefaultSize, 0 )
+		gbSizer21.Add( self.m_radioBtn2, wx.GBPosition( 0, 1 ), wx.GBSpan( 1, 1 ), wx.ALL, 5 )
+		
+		bSizer5.Add( gbSizer21, 1, wx.EXPAND, 5 )
+
+		self.m_staticText61 = TPStaticText( self.bitmap, wx.ID_ANY, u"相关政策链接：财税〔2017〕43号")
+		bSizer5.Add( self.m_staticText61, 0, wx.ALL, 5 )
+
+		gbSizer2.Add( bSizer5, wx.GBPosition( 0, 3 ), wx.GBSpan( 1, 1 ), wx.EXPAND, 5 )
+		
+
 		self.m_staticline2 = wx.StaticLine( self.bitmap, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer2.Add( self.m_staticline2, 0, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_staticText6 = TPStaticText( self, wx.ID_ANY, u"使用说明：\n本软件仅支持Window平台。\n1. 按照《中华人民共和国企业所得税年度纳税申报表（A类，2017年版）》所示规范填写\n   《2017年版企业所得税申报表》。\n2.《2017年版企业所得税申报表》的格式应为xlsx，如为xls格式，请使用2007或更新版本\n    Excel将表格转换为xlsx格式。\n3. 点击“选择文件”按钮，选择填写完毕的《2017年版企业所得税申报表》。\n4. 点击“开始审查”按钮。\n5. 报告将生成在该软件所处目录下。请对照报告修改申报表。\n")
+		self.m_staticText6 = TPStaticText( self, wx.ID_ANY, u"本软件仅支持Window平台。\n1. 按照《中华人民共和国企业所得税年度纳税申报表（A类，2017年版）》所示规范填写\n   《2017年版企业所得税申报表》。\n2.《2017年版企业所得税申报表》的格式应为xlsx，如为xls格式，请使用2007或更新版本\n    Excel将表格转换为xlsx格式。\n3. 点击“选择文件”按钮，选择填写完毕的《2017年版企业所得税申报表》。\n4. 点击“开始审查”按钮。\n5. 报告将生成在该软件所处目录下。请对照报告修改申报表。\n(注意：报告中第二个参数为错误单元格在Excel中的坐标，而不是行次)")
 		#self.m_staticText6.Wrap( -1 )
 		bSizer2.Add( self.m_staticText6, 1, wx.ALL, 5 )
 	
@@ -123,12 +136,35 @@ class MyFrame1 ( wx.Frame ):
 
 	######## 检查方法 入口
 	def __startChecking(self,evert):
+		flag = self.m_radioBtn1.GetValue()
+		no_flag = self.m_radioBtn2.GetValue()
+
+		if not flag|no_flag:
+			wx.MessageBox("请先选择是否小微企业", "错误" ,wx.OK | wx.ICON_INFORMATION) 
+
 		if path!=None:
 			report = open("report.txt", 'w')
 			rules = load_rules()
 			check_workbook(path,rules,report)
 
+			check_7040(path,rules,flag,report)
+
 			report.close()
+
+			report = open("report.txt",'r+')
+			data=''
+			for line in report.readlines():
+				if(line.find('A107030')==0):
+					line += '非享受创业投资企业抵扣应纳税所得额优惠（含结转）纳税人可忽略本条错误提醒\n'
+
+				data+=line
+			
+			report.close()
+
+			report = open("report.txt",'w+')
+			report.writelines(data)
+			report.close()
+
 
 			win = done(self)
 			win.Show(True)
@@ -198,20 +234,19 @@ class done ( wx.Dialog ):
 class author ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"版权说明", pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"版权说明", pos = wx.DefaultPosition, size = wx.Size(300,150), style = wx.DEFAULT_DIALOG_STYLE )
 		
-		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		self.SetSizeHintsSz( wx.Size(300,150), wx.Size(300,150) )
 		
 		bSizer7 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"本软件是一个为《2017年版企业所得税申报表》提供自动审查服务的自动审查工具，版本号：v1.0\n\n版权所有：西藏经济技术开发区国家税务局\n\n开发者：郭元昱，蒋若波，朱慧媛\n", wx.DefaultPosition, wx.Size( 300,200 ), 0 )
+		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"本软件是一个为《2017年版企业所得税申报表》提供自动审查服务的自动审查工具，版本号：v1.0\n\n版权所有：西藏经济技术开发区国家税务局\n\n开发者：郭元昱，蒋若波，朱慧媛\n", wx.DefaultPosition, wx.Size( 300,150 ), 0 )
 		self.m_staticText8.Wrap( -1 )
 		bSizer7.Add( self.m_staticText8, 1, wx.ALL|wx.EXPAND, 5 )
 		
 		
 		self.SetSizer( bSizer7 )
 		self.Layout()
-		bSizer7.Fit( self )
 		
 		self.Centre( wx.BOTH )
 	
@@ -232,7 +267,7 @@ class manual ( wx.Dialog ):
 		
 		bSizer6 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_textCtrl3 = wx.TextCtrl( self, wx.ID_ANY, u"使用说明：\n本软件仅支持Window平台。\n1. 按照《中华人民共和国企业所得税年度纳税申报表（A类，2017年版）》所示规范填写《2017年版企业所得税申报表》。\n2.《2017年版企业所得税申报表》的格式应为xlsx，如为xls格式，请使用2007或更新版本Excel将表格转换为xlsx格式。\n3. 点击“选择文件”按钮，选择填写完毕的《2017年版企业所得税申报表》。\n4. 点击“开始审查”按钮。\n5. 报告将生成在该软件所处目录下。请对照报告修改申报表。\n----------------------------------------------------\n免责声明：\n", wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.TE_READONLY|wx.TE_MULTILINE )
+		self.m_textCtrl3 = wx.TextCtrl( self, wx.ID_ANY, u"使用说明：\n本软件仅支持Window平台。\n1. 按照《中华人民共和国企业所得税年度纳税申报表（A类，2017年版）》所示规范填写《2017年版企业所得税申报表》。\n2.《2017年版企业所得税申报表》的格式应为xlsx，如为xls格式，请使用2007或更新版本Excel将表格转换为xlsx格式。\n3. 点击“选择文件”按钮，选择填写完毕的《2017年版企业所得税申报表》。\n4. 点击“开始审查”按钮。\n5. 报告将生成在该软件所处目录下。请对照报告修改申报表(注意：报告中第二个参数为错误单元格在Excel中的坐标，而不是行次)。\n----------------------------------------------------\n免责声明：\n鉴于本软件使用非人工检索/分析方式，无法确定您输入的数据是否合法，所以对审查结果不承担责任。\n----------------------------------------------------\n解释权：\n本软件之说明以及其修改权、更新权及最终解释权均属拉萨经济技术开发区国家税务局所有。", wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.TE_READONLY|wx.TE_MULTILINE )
 		bSizer6.Add( self.m_textCtrl3, 1, wx.ALL|wx.EXPAND, 5 )
 
 		self.SetSizer( bSizer6 )
