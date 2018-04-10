@@ -23,6 +23,7 @@ class MyFrame1 ( wx.Frame ):
 			base_path = os.path.abspath(".")
 		bgfile = os.path.join(base_path, 'bg.jpg')
 	 	self.bitmap = wx.StaticBitmap(self, -1, wx.Image(bgfile, wx.BITMAP_TYPE_ANY).ConvertToBitmap(), (0, 0)) 
+	###### 菜单栏
 		self.m_menubar1 = wx.MenuBar( 0 )
 		self.m_menu1 = wx.Menu()
 		self.m_menuItem1 = wx.MenuItem( self.m_menu1, wx.ID_ANY, u"打开文件", wx.EmptyString, wx.ITEM_NORMAL )
@@ -48,16 +49,17 @@ class MyFrame1 ( wx.Frame ):
 		self.SetMenuBar( self.m_menubar1 )
 		######### 绑定响应函数
 		self.Bind(wx.EVT_MENU,self.openAuthor,self.m_menuItem3) 
-		
+	####结束菜单栏
+
+	######## 整体面板
 		bSizer2 = wx.BoxSizer( wx.VERTICAL )
 
-		
-		
 		self.m_textCtrl1 = wx.TextCtrl( self, wx.ID_ANY, u"文件路径", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_textCtrl1.Enable( False )
 		
 		bSizer2.Add( self.m_textCtrl1, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
 		
+		### 水平版面
 		gbSizer2 = wx.GridBagSizer( 0, 0 )
 		gbSizer2.SetFlexibleDirection( wx.BOTH )
 		gbSizer2.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
@@ -74,8 +76,10 @@ class MyFrame1 ( wx.Frame ):
 		
 		bSizer2.Add( gbSizer2, 0, wx.ALIGN_CENTER_HORIZONTAL, 5 )
 
+		## 嵌套在水平版面 gbSizer2 中的垂直版面（单选框+相关链接说明）
 		bSizer5 = wx.BoxSizer( wx.VERTICAL )
 
+		## 嵌套在 垂直版面 bSizer5 中的水平版面 （存放单选框）
 		gbSizer21 = wx.GridBagSizer( 0, 0 )
 		gbSizer21.SetFlexibleDirection( wx.BOTH )
 		gbSizer21.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
@@ -98,7 +102,6 @@ class MyFrame1 ( wx.Frame ):
 		bSizer2.Add( self.m_staticline2, 0, wx.EXPAND |wx.ALL, 5 )
 		
 		self.m_staticText6 = TPStaticText( self, wx.ID_ANY, u"本软件仅支持Window平台。\n1. 按照《中华人民共和国企业所得税年度纳税申报表（A类，2017年版）》所示规范填写\n   《2017年版企业所得税申报表》。\n2.《2017年版企业所得税申报表》的格式应为xlsx，如为xls格式，请使用2007或更新版本\n    Excel将表格转换为xlsx格式。\n3. 点击“选择文件”按钮，选择填写完毕的《2017年版企业所得税申报表》。\n4. 点击“开始审查”按钮。\n5. 报告将生成在该软件所处目录下。请对照报告修改申报表。\n(注意：报告中第二个参数为错误单元格在Excel中的坐标，而不是行次)")
-		#self.m_staticText6.Wrap( -1 )
 		bSizer2.Add( self.m_staticText6, 1, wx.ALL, 5 )
 	
 		#self.m_staticText5 = TPStaticText(self, wx.ID_ANY, u"                                       拉萨经济技术开发区国家税务局")
@@ -109,7 +112,7 @@ class MyFrame1 ( wx.Frame ):
 		self.Layout()
 		
 		self.Centre( wx.BOTH )
-
+	####整体面板布局结束
 
 	###############
 	####   打开文件
