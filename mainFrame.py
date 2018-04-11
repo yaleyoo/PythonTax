@@ -15,7 +15,7 @@ class MyFrame1 ( wx.Frame ):
 	def __init__( self, parent ):
 		global path
 		path = None
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查辅助工具", pos = wx.DefaultPosition, size = wx.Size( 515,338 ), style = wx.DEFAULT_FRAME_STYLE|wx.TRANSPARENT_WINDOW )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"申报表自动审查辅助工具", pos = wx.DefaultPosition, size = wx.Size( 515,338 ), style = wx.DEFAULT_FRAME_STYLE )
 		self.SetSizeHintsSz(wx.Size(515,338), wx.Size(515,338))
 		if hasattr(sys, "_MEIPASS"):
 	 		base_path = sys._MEIPASS
