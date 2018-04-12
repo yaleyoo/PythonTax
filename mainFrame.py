@@ -142,21 +142,20 @@ class MyFrame1 ( wx.Frame ):
 		flag = self.m_radioBtn1.GetValue()
 		no_flag = self.m_radioBtn2.GetValue()
 
-		if not flag|no_flag:
-			wx.MessageBox("请先选择是否小微企业", "错误" ,wx.OK | wx.ICON_INFORMATION) 
+		if flag|no_flag:
+			if path!=None:
+				report = open("report.txt", 'w')
+				rules = load_rules()
+				check_workbook(path,rules,report, flag)
 
-		if path!=None:
-			report = open("report.txt", 'w')
-			rules = load_rules()
-			check_workbook(path,rules,report, flag)
+				report.close()
 
-			report.close()
-
-
-			win = done(self)
-			win.Show(True)
+				win = done(self)
+				win.Show(True)
+			else:
+				wx.MessageBox("输入文件不能为空，请选择输入文件", "错误" ,wx.OK | wx.ICON_INFORMATION) 
 		else:
-			wx.MessageBox("输入文件不能为空，请选择输入文件", "错误" ,wx.OK | wx.ICON_INFORMATION) 
+			wx.MessageBox("请先选择是否小微企业", "错误" ,wx.OK | wx.ICON_INFORMATION) 
 
 	def __del__( self ):
 		pass
