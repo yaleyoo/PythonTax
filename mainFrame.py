@@ -101,12 +101,12 @@ class MyFrame1 ( wx.Frame ):
 		self.m_staticline2 = wx.StaticLine( self.bitmap, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
 		bSizer2.Add( self.m_staticline2, 0, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_staticText6 = TPStaticText( self, wx.ID_ANY, u"本软件仅支持Window平台。\n1. 按照《中华人民共和国企业所得税年度纳税申报表（A类，2017年版）》所示规范填写\n   《2017年版企业所得税申报表》。\n2.《2017年版企业所得税申报表》的格式应为xlsx，如为xls格式，请使用2007或更新版本\n    Excel将表格转换为xlsx格式。\n3. 点击“选择文件”按钮，选择填写完毕的《2017年版企业所得税申报表》。\n4. 点击“开始审查”按钮。\n5. 报告将生成在该软件所处目录下。请对照报告修改申报表。\n(注意：报告中第二个参数为错误单元格在Excel中的坐标，而不是行次)")
+		self.m_staticText6 = TPStaticText( self, wx.ID_ANY, u"\n本工具只适用于辅助审核非小微/小微企业 减免情况，不做其他审核。")
 		bSizer2.Add( self.m_staticText6, 1, wx.ALL, 5 )
 	
 		#self.m_staticText5 = TPStaticText(self, wx.ID_ANY, u"                                       拉萨经济技术开发区国家税务局")
 		#bSizer2.Add( self.m_staticText5, 0, wx.ALIGN_BOTTOM|wx.ALL|wx.EXPAND, 28 )
-		
+		self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnErase)
 		
 		self.SetSizer( bSizer2 )
 		self.Layout()
@@ -150,6 +150,7 @@ class MyFrame1 ( wx.Frame ):
 
 				report.close()
 
+
 				win = done(self)
 				win.Show(True)
 			else:
@@ -162,6 +163,8 @@ class MyFrame1 ( wx.Frame ):
 #########################
 #### 透明背景
 ######################
+	def OnErase(self, event):
+		pass
 class TPStaticText(wx.StaticText):  
     """ transparent StaticText """  
     def __init__(self,parent,id,label='',  

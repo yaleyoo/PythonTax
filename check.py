@@ -32,7 +32,7 @@ def check_cell(wb, value, rule, must_fill=False, not_fill_message="必须填写�
             expect_value = eval(rule)
         expect_value = '{:.2f}'.format(Decimal(expect_value))
         if value == expect_value:  # 正确
-            return None
+            return "此单元格正确！"
         else:
             return "错误：值: " + value + " 期望值: " + expect_value
     except TypeError as e:
@@ -88,23 +88,19 @@ def check_7040(wb, flag, report):
             report.write(report_line("A107040", "C37", message))
 
 def check_general(wb, rules, report):
-    for sheet_name in sorted(rules.keys()):
-        if sheet_name not in wb:
-            report.write(report_line(sheet_name, None, " 子表不存在"))
-            continue
-        for col in sorted(rules[sheet_name].keys()):
-            for row in sorted(rules[sheet_name][col].keys()):
-                cell = col + str(row)
-                value = wb[sheet_name][cell].value
-                rule = rules[sheet_name][col][row]
-
-                message = check_cell(wb, value, rule)
-                if message:
-                    if sheet_name == "A107030":
-                        report.write(report_line(sheet_name, cell, message + " (非享受创业投资企业抵扣应纳税所得额优惠（含结转）纳税人可忽略本条错误提醒)\n"))
-                    else:
-                        report.write(report_line(sheet_name, cell, message))
-
+	checking_list = ['A100000','A101010','A101020','A102010','A102020','A103000','A104000']
+	for sheet_name in checking_list:
+		if sheet_name not in wb:
+			report.write(report_line(sheet_name, None, " 子表不存在"))
+			continue
+		for col in sorted(rules[sheet_name].keys()):
+			for row in sorted(rules[sheet_name][col].keys()):
+				cell = col + str(row)
+				value = wb[sheet_name][cell].value
+				rule = rules[sheet_name][col][row]
+				
+				message = check_cell(wb, value, rule)
+				report.write(report_line(sheet_name, cell, message))
 
 def check_workbook(filename, rules, report, small_business):
     report.write("-------------------------------------------------------------\n")
